@@ -46,6 +46,7 @@ def train(config, model, train_iter, valid_iter, test_iter):
     writer=SummaryWriter(log_dir=config.log_path+"/"+time.strftime("%m-%d_%H.%M",time.localtime()))
     total_batch=0
     last_improve=0
+    flag=False
 
     for epoch in range(1, epochs + 1):
         # if epoch % 5 ==0:

@@ -3,10 +3,11 @@ import torch.nn as nn
 import codecs
 import numpy as np
 import re
+import torch.nn.functional as F
 
 class Config(object):
     def __init__(self,data_ori, data_tgt):
-        self.model_name="lstm_embedding"
+        self.model_name="textcnn"
         self.data_ori=data_ori+"/"
         self.train_path="train_100.csv"
         self.valid_path="valid_100.csv"
@@ -18,12 +19,15 @@ class Config(object):
         self.embedding_dim=768
         self.hidden_dim=128
         self.class_num=10
-        self.num_lstm_layers=1
-        self.num_linear=2
+        #self.num_lstm_layers=1
+        #self.num_linear=2
         self.dropout=0.3
         self.batch_size=64
         self.learning_rate=1e-3
         self.epochs = 10
+
+        self.filter_sizes=(2,3,4)
+        self.num_filters=256## channels数目
 
         ### 构建词典
         self.vocab_maxsize = 4000
@@ -35,9 +39,6 @@ class Config(object):
         self.device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.print_cricle=100
         self.require_improvement=100
-
-
-
 
 class Model(nn.Module):
     #def __init__(self, n_vocab, hidden_dim, emb_dim=100, num_linear=1):
@@ -62,20 +63,36 @@ class Model(nn.Module):
 
         # self.embedding=nn.Embedding(n_vocab,emb_dim)
         self.embedding = embeds
-        self.encoder = nn.LSTM(config.embedding_dim, config.hidden_dim, num_layers=config.num_lstm_layers, dropout=config.dropout)
+        self.conv=nn.Conv2d(1,config.num_filters,(3,config.embedding_dim))
+        self.convs=nn.ModuleList(
+            [nn.Conv2d(1,config.num_filters,(k,config.embedding_dim))for k in config.filter_sizes]
+        )
         self.dropout = nn.Dropout(config.dropout)
-        self.linear_layers = []
-        for _ in range(config.num_linear):
-            self.linear_layers.append(nn.Linear(config.hidden_dim, config.hidden_dim))
-            self.linear_layers = nn.ModuleList(self.linear_layers)
+        self.fc=nn.Linear(config.num_filters*len(config.filter_sizes),config.class_num)  # 每个核心的大小，出一个向量
 
-        self.predictor = nn.Linear(config.hidden_dim, 10)
+
+    def conv_and_pool(self,inputs, conv):
+        inputs=F.relu(conv(inputs))## 这里卷积后，会把embeddings所在那一层抹掉
+        inputs=inputs.squeeze(3)
+        inputs=F.max_pool1d(inputs,inputs.size(2))## 这里最大池化层后，会把  抹掉
+        inputs=inputs.squeeze(2)
+        #print(inputs.shape)
+        return inputs
 
     def forward(self, seq):
-        hdn, _ = self.encoder(self.embedding(seq))
-        feature = hdn[-1, :, :]
-        feature = self.dropout(feature)
-        for layer in self.linear_layers:
-            feature = layer(feature)
-        preds = self.predictor(feature)
-        return preds
+        ## 这里很方，觉得大致思路就是，从输入到输出，最后在接fc层的时候，怼成一个[batch_size, n]大小的矩阵就可以了。n是描述特征的
+        #print(seq.shape)
+        seq_embedings = self.embedding(seq.t())
+        #print("加了embedding然后batch放到第一维度", seq_embedings.shape)
+        seq_embedings_batch=seq_embedings.unsqueeze(1)
+        #print("再加一个维度",seq_embedings_batch.shape)
+        ##把所有核心的结果连在一起
+        xx=self.conv_and_pool(seq_embedings_batch,self.conv)
+        #print(xx.shape)
+        concat_res=torch.cat([self.conv_and_pool(seq_embedings_batch,conv)for conv in self.convs],1)## 注意concat的方向
+        #print("所有结果链接在一起：", concat_res.shape)
+        out=self.dropout(concat_res)
+        out=self.fc(out)
+        #print("outshape: ",out.shape)
+        return out
+
