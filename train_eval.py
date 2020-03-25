@@ -37,6 +37,22 @@ def evaluate(config, model, eval_iter, test=False):
         # print(predict_all)
     return loss_total/len(eval_iter),acc, class_report
 
+
+def test(config, model, TEXT, sentence):
+    sentence_seq=[TEXT.vocab.stoi[one] for one in sentence]
+    need_pad=config.sen_max_length-len(sentence_seq)
+    for _ in range(need_pad):
+        sentence_seq.append(1)
+
+    example=torch.Tensor(sentence_seq).long().to(config.device)
+    example=example.unsqueeze(1)
+
+    preds=model(example)
+    predic=torch.max(preds.data,1)[1].cpu().numpy()
+    return predic
+
+
+
 def train(config, model, train_iter, valid_iter, test_iter):
     model.train()
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
@@ -72,7 +88,10 @@ def train(config, model, train_iter, valid_iter, test_iter):
                 pred_res = torch.max(preds.data, 1)[1].cpu()
                 train_acc = metrics.accuracy_score(y_p.cpu(), pred_res)
                 eval_loss, eval_acc, eval_report = evaluate(config, model, valid_iter)
-                print("eval_loss",eval_loss,"train_acc",train_acc,total_batch)
+                test_loss, test_acc, test_report = evaluate(config, model, test_iter)
+                print("train_loss: ",loss,"train_acc: ",train_acc,total_batch)
+                print("eval_loss: ",eval_loss,"eval_acc: ",eval_acc,total_batch)
+                print("test_loss: ",test_loss,"test_acc: ",test_acc,total_batch)
                 if eval_loss < eval_best_loss:
                     eval_best_loss = eval_loss
                     torch.save(model.state_dict(), config.save_path)
@@ -87,6 +106,8 @@ def train(config, model, train_iter, valid_iter, test_iter):
                 print(total_batch-last_improve)
                 print(config.require_improvement)
                 print("超过",config.require_improvement,"轮次没有提升并退出")
+                print("eval_report: ", eval_report)
+                print("test_report", test_report)
                 flag=True
                 break
         if flag:

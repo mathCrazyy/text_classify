@@ -8,9 +8,9 @@ class Config(object):
     def __init__(self,data_ori, data_tgt):
         self.model_name="lstm_embedding"
         self.data_ori=data_ori+"/"
-        self.train_path="train_100.csv"
-        self.valid_path="valid_100.csv"
-        self.test_path="test_100.csv"
+        self.train_path="train.csv"
+        self.valid_path="valid.csv"
+        self.test_path="test.csv"
         self.embedding_path="need_bertembedding"
 
         self.sen_max_length=150
@@ -34,7 +34,7 @@ class Config(object):
 
         self.device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.print_cricle=100
-        self.require_improvement=100
+        self.require_improvement=1000
 
 
 

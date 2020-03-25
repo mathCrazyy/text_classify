@@ -38,7 +38,7 @@ class Config(object):
 
         self.device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.print_cricle=100
-        self.require_improvement=100
+        self.require_improvement=1000
 
 class Model(nn.Module):
     #def __init__(self, n_vocab, hidden_dim, emb_dim=100, num_linear=1):
