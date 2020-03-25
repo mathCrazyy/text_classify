@@ -19,8 +19,8 @@
   过程中生成的文件，包括模型和日志。
 ## 结果
 结果具有随机性，大致差不多如下: 
-![avatar](https://github.com/mathCrazyy/text_classify/edit/master/pic/eval.png)
-![avatar](https://github.com/mathCrazyy/text_classify/edit/master/pic/test.png)
+![avatar](https://github.com/mathCrazyy/text_classify/tree/master/pic/eval.png)
+![avatar](https://github.com/mathCrazyy/text_classify/tree/master/pic/test.png)
 
 ### reference
 https://github.com/649453932/Chinese-Text-Classification-Pytorch  
