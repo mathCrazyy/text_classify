@@ -20,6 +20,7 @@
 ## 结果
 结果具有随机性，大致差不多如下: 
 ![avatar](https://github.com/mathCrazyy/text_classify/tree/master/pic/eval.png)
+
 ![avatar](https://github.com/mathCrazyy/text_classify/tree/master/pic/test.png)
 
 ### reference
