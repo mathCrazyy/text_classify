@@ -1,6 +1,6 @@
 # text_classify
 针对Cnews数据集进行分类，使用了torchtext进行文本预处理，使用textcnn,lstm提取特征做分类。  
-代码中使用的need_bertembedding可以通过友军自动生成: https://github.com/xmxoxo/BERT-Vector
+代码中使用的need_bertembedding可以通过如下工具自动生成: https://github.com/xmxoxo/BERT-Vector
 
 ### 数据集如下
 链接：https://pan.baidu.com/s/1t-MGwuntLgjOwlJKHh3oNg 
