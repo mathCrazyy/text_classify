@@ -6,7 +6,7 @@
 链接：https://pan.baidu.com/s/1t-MGwuntLgjOwlJKHh3oNg 
 提取码：j2yr
 
-## 代码主体
+### 代码主体
 - models
   网络定义，包含了textcnn和lstm的网络构建。
 - train_eval.py
@@ -17,11 +17,16 @@
   data文件夹从百度网盘下载，直接考入即可。
 - data_tag
   过程中生成的文件，包括模型和日志。
-## 结果
+### 结果
 结果具有随机性，大致差不多如下: 
 ![avatar](https://github.com/mathCrazyy/text_classify/tree/master/pic/eval.png)
 
 ![avatar](https://github.com/mathCrazyy/text_classify/tree/master/pic/test.png)
+
+### 代码对应的博客地址:
+https://blog.csdn.net/qq_25992377/article/details/105012948  
+https://blog.csdn.net/qq_25992377/article/details/105013476  
+https://blog.csdn.net/qq_25992377/article/details/105019786
 
 ### reference
 https://github.com/649453932/Chinese-Text-Classification-Pytorch  
