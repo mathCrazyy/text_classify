@@ -13,6 +13,8 @@
   训练代码，验证代码，测试单条数据代码，可直接微小改动构建flask服务。
 - utils.py
   数据处理部分，主要使用torchtext完成了数据的词典映射，pad，shuffle等操作。
+- run.py
+  包含了训练和验证代码，以及单句测试
 - data
   data文件夹从百度网盘下载，直接考入即可。
 - data_tag
